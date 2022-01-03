@@ -5,15 +5,25 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	db "github.com/matiolsz/simplebank/db/sqlc"
+	"github.com/matiolsz/simplebank/token"
 )
 
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
 func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+	tokenMaker, err := token.NewPasetoMaker("12345678901234567890123456789012")
+	if err != nil {
+		return nil
+		// , fmt.Errorf("cannot create token amker %w", err)
+	}
+	server := &Server{
+		store:      store,
+		tokenMaker: tokenMaker,
+	}
 	router := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
