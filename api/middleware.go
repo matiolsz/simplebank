@@ -21,14 +21,14 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 
 		if len(authorizationHeader) == 0 {
-			err := errors.New("auth header is not provided")
+			err := errors.New("authorization header is not provided")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
 
 		fields := strings.Fields(authorizationHeader)
 		if len(fields) < 2 {
-			err := errors.New("invalid auth header format")
+			err := errors.New("invalid authorization header format")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
@@ -46,6 +46,7 @@ func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
+
 		ctx.Set(authorizationPayloadKey, payload)
 		ctx.Next()
 	}
